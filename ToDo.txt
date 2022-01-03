@@ -1,0 +1,11 @@
+1.  Bild-Upload 
+  1.3 Bild wieder löschen, wenn Rezept gelöscht oder Bild geändert wird?
+
+2. Authentifizierung?
+
+4. Deployment
+  4.1 Git nötig?
+  4.2 Wo? Heroku?
+  4.3 Wie von localhost 
+
+5. Thunks: Delete Recipe macht aktuell nichts im Store --> Muss es ein Thunk sein oder reicht ein 'normaler' async Call mit Axios?

@@ -1,0 +1,151 @@
+fieldset {
+  margin: .5rem 0;
+  padding: 1.5rem;
+}
+
+.heading {
+  line-height: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.titleInput {
+  font-size: 1rem;
+  width: clamp(254px, 100%, 500px);
+  padding: 0.5%;
+}
+
+.filterHeading {
+  font-weight: bold;
+  display: inline-block;
+  min-width: 150px;
+}
+
+.filterSection {
+  margin-bottom: clamp(8px, 5%, 16px);
+}
+
+.filterOption {
+  padding: 6px;
+  border-radius: 5px;
+  transition: background-color .2s;
+}
+
+.selectedOption {
+  background-color: rgb(231, 230, 230);
+}
+
+.filterOption:hover {
+  background-color: rgb(231, 230, 230);
+}
+
+.filterOptions {
+  display: inline-flex;
+  flex-flow: row wrap;
+  width: calc(100% - 150px);
+  gap: 1.5rem;
+}
+
+label {
+  position: relative;
+  top: -2px;
+}
+
+img {
+  width: clamp(150px, 10%, 300px);
+  height: auto;
+  border-radius: 15px;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  display: block;
+  margin: 0.5rem auto;
+}
+
+input[type="submit"],
+.resetBtn {
+  margin: 1.5rem 1.5rem 0 0;
+  padding: 0.75rem;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+.addEditSuccess {
+  padding: 1%;
+  margin-top: 1rem;
+  color: green;
+  background-color: lightgreen;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.addEditFail {
+  padding: 1%;
+  margin-top: 1rem;
+  color: red;
+  background-color: rgb(245, 182, 182);
+  border-radius: 15px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.successRedirectPrompt {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.confirmBtn {
+  display: inline-block;
+  width: 2.5rem;
+  margin-left: .5rem;
+  border-radius: 15px;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+  fieldset {
+    margin: 0;
+    padding: 5%;
+  }
+
+  .heading {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .filterHeading {
+    display: block;
+    width: 100%;
+    margin-bottom: 1.25rem;
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
+  .titleInput {
+    display: block;
+    width: 80%;
+    margin: auto;
+    line-height: 1.5;
+  }
+
+  .filterOptions {
+    justify-content: center;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  input[type="submit"],
+  .resetBtn {
+    display: block;
+    width: 45%;
+    margin: 2rem auto;
+  }
+
+  .addEditSuccess,
+  .addEditFail {
+    font-size: 1rem;
+  }
+}
