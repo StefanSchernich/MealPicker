@@ -1,11 +1,26 @@
-1.  Bild-Upload 
-  1.3 Bild wieder löschen, wenn Rezept gelöscht oder Bild geändert wird?
+3. Testing
+  3.1 Adding
+    a) Bild & Daten erfolgreich hochgeladen
+    b) Verlinkung zu neuem Rezept funzt
+  3.2 Editing
+    a) Änderungen funzen
+    b) falls neues Bild:
+      - altes gelöscht
+      - neues hinzugefügt
+  3.3 Responsiveness Check
 
-2. Authentifizierung?
+4. Mehr Ingredients ergänzen
+5. Thunks: Delete Recipe macht aktuell nichts im Store --> Muss es ein Thunk sein oder reicht ein 'normaler' async Call mit Axios?
+7. "*" route in backend --> serve index.html
 
-4. Deployment
+
+FINAL. Deployment
   4.1 Git nötig?
   4.2 Wo? Heroku?
-  4.3 Wie von localhost 
+  4.3 Wie von localhost --> relative Links klären, static files
+  https://www.freecodecamp.org/news/how-to-create-a-react-app-with-a-node-backend-the-complete-guide/
 
-5. Thunks: Delete Recipe macht aktuell nichts im Store --> Muss es ein Thunk sein oder reicht ein 'normaler' async Call mit Axios?
+X. Authentifizierung?
+Y. Filter in Store verlegen, damit Reset des Filters ohne PropDrilling möglich?
+
+

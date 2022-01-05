@@ -5,8 +5,8 @@ header {
 }
 
 .pageHeader {
+  cursor: pointer;
   display: flex;
-  width: 35%;
   margin-left: .5%;
   align-items: center;
 }

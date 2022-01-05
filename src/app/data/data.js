@@ -112,6 +112,14 @@ export const ingredientOptions = [
     id: 13,
     value: "Eier",
     icon: "🥚"
+  },{
+    id: 14,
+    value: "Mais",
+    icon: "🌽"
+  },
+  {
+    id: 15,
+    value: "Karotten",
+    icon: "🥕"
   }
-
 ]

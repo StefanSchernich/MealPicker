@@ -21,7 +21,7 @@ fieldset {
 }
 
 .filterSection {
-  margin-bottom: clamp(8px, 5%, 16px);
+  margin-bottom: clamp(.5rem, 5%, 1rem);
 }
 
 .filterOption {
@@ -129,6 +129,10 @@ input[type="submit"],
     width: 80%;
     margin: auto;
     line-height: 1.5;
+  }
+
+  .filterSection {
+    text-align: center;
   }
 
   .filterOptions {

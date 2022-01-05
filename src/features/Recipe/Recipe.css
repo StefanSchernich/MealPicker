@@ -51,11 +51,11 @@
 }
 
 .warning {
-  margin: 30px 10%;
-  padding: 1rem;
+  padding: 1%;
   background-color: rgb(245, 182, 182);
   border-radius: 15px;
   font-weight: bold;
+  font-size: 1.5rem;
   color: red;
   text-align: center;
 }

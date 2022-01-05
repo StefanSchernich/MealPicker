@@ -50,9 +50,15 @@ export default function Filter(props) {
       difficulty,
       ingredients,
     };
-    const preparedFilterObj = prepareFilterObj(filter);
-    dispatch(fetchRandomRecipe(preparedFilterObj)).unwrap()
-      .then(() => navigate("/recipe"))
+    const sanitizedFilterObj = sanitizeObj(filter);
+    dispatch(fetchRandomRecipe(sanitizedFilterObj))
+      .then(() => {
+        navigate("/recipe")
+        const recipeElem = document.querySelector(".recipe")
+        recipeElem?.scrollIntoView({ behavior: "auto" })
+        const warningElem = document.querySelector(".warning")  // will render if no recipe found
+        warningElem?.scrollIntoView({ behavior: "smooth" })
+      })
       .catch(err => console.log(err.message))
   };
 
@@ -119,8 +125,11 @@ export default function Filter(props) {
   );
 }
 
-// takes filter obj and cleans out falsy (= empty) values and empty arrays
-function prepareFilterObj(filterObj) {
+/**
+ * @param {Object} filterObj - obj to be sanitized
+ * @returns input object w/o falsy values and empty arrays
+ */
+function sanitizeObj(filterObj) {
   let preparedFilterObj = {};
   for (let filterProp in filterObj) {
     if (

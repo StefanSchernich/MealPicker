@@ -17,8 +17,9 @@
 }
 
 .plusMinusButton {
-	width: 1.5rem;
-	height: 1.5rem;
+	width: 2.0rem;
+	height: 2.0rem;
+  background-color: #FFF;
 	font-weight: bold;
 	border-radius: 50%;
 	margin-left: 10px;

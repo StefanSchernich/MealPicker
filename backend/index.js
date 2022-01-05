@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
 const cors = require("cors");
 const multer = require("multer");
 const { v4: uuid4 } = require("uuid");
@@ -33,10 +34,8 @@ const upload = multer({
 	limits: { fileSize: 2 * 1024 * 1024 },
 });
 
-const PORT = 9000;
-
 mongoose
-	.connect("mongodb+srv://admin-stefan:Hasenhase86@cluster0.87bkb.mongodb.net/RecipeDB?retryWrites=true&w=majority")
+	.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.87bkb.mongodb.net/RecipeDB?retryWrites=true&w=majority`)
 	.then(() => console.log("Successfully connected to DB"))
 	.catch((err) => console.error(err));
 
@@ -62,9 +61,7 @@ app.get("/fetchRandomRecipe", async (req, res) => {
 });
 
 app.post("/addRecipe", upload.single("mealImage"), async (req, res) => {
-	// Deal with file formData
-	const { filename } = req.file;
-	const imgUrl = `/images/${filename}`;
+  console.log("file in ADD: ", req.file);
 	// Deal with remaining formData
 	const { title, category, calories, difficulty } = req.body;
 
@@ -75,22 +72,24 @@ app.post("/addRecipe", upload.single("mealImage"), async (req, res) => {
 			ingredientArr.push(req.body[prop]);
 		}
 	}
-	const newRecipe = await Recipe.create({
+	let recipeData = {
 		title,
-		imgUrl,
 		category,
 		calories,
 		difficulty,
 		ingredients: ingredientArr,
-	});
+	};
+  if (req.file) {
+    recipeData = 	updateImgUrl(req, recipeData)
+  }
+  console.log("recipeData to be handed to document creation:", recipeData)
+  const newRecipe = await Recipe.create(recipeData);
 	return res.status(200).json(newRecipe);
 });
 
 app.patch("/editRecipe/:id", upload.single("mealImage"), async (req, res) => {
 	// req.body enthält editiertes Rezept (title, category, calories, difficulty, ingredients)
 	console.log("file in EDIT: ", req.file);
-  const { filename } = req.file;
-	const imgUrl = `/images/${filename}`;
 	const { id } = req.params;
 	// Deal with formData
 	const { title, category, calories, difficulty } = req.body;
@@ -102,43 +101,90 @@ app.patch("/editRecipe/:id", upload.single("mealImage"), async (req, res) => {
 			ingredientArr.push(req.body[prop]);
 		}
 	}
-	const newValues = {
+	let patchData = {
 		title,
-    imgUrl,
 		category,
 		calories,
 		difficulty,
 		ingredients: ingredientArr,
 	};
-	const editedRecipe = await Recipe.findByIdAndUpdate(id, newValues, { returnDocument: "after" }).exec();
+
+	if (req.file) {
+		// add new imgUrl to patch data
+		patchData = updateImgUrl(req, patchData);
+		// console.log("finalizedValues: ", patchData);
+
+		// query for previous recipe in db, look for "imgUrl"-field
+		const previousImg = await Recipe.findById(id, "imgUrl").exec();
+    console.log("previousImg: ", previousImg)
+		if (previousImg.imgUrl) {
+			const previousImgUrl = path.join(__dirname, "..", "public", previousImg.imgUrl)   // path to previous image
+			console.log("typeof previousImgUrl: ", typeof previousImgUrl);
+			console.log("previousImgUrl: ", previousImgUrl);
+			deleteFile(previousImgUrl);
+		}
+	}
+	const editedRecipe = await Recipe.findByIdAndUpdate(id, patchData, { returnDocument: "after" }).exec();
 	return res.status(200).json(editedRecipe);
 });
 
-// app.get("/fetchMealImg", async (req, res) => {
-// 	try {
-//     const { filePath } = req.query   // /images/imgFilename.*
-// 		const mealImgFromStorage = await fs.readFile(path.join(__dirname, "..", "public", filePath)); // public/images/imgFilename.*
-//     console.log("imageData: ",mealImgFromStorage)
-//     res.status(200).end(mealImgFromStorage)
-// 	} catch (error) {
-// 		console.error(`Got an error trying to read the file: ${error.message}`);
-// 	}
-// });
-
 app.delete("/deleteRecipe/:id", async (req, res) => {
 	const { id } = req.params;
-	await Recipe.findByIdAndDelete(id).exec();
-	return res.sendStatus(200);
+	const recipeToBeDeleted = await Recipe.findByIdAndDelete(id).exec();
+  const previousImgUrl = recipeToBeDeleted.imgUrl
+		if (previousImgUrl) {
+			const previousImgPath = path.join(__dirname, "..", "public", previousImgUrl)
+			// console.log("typeof previousImgUrl: ", typeof previousImgUrl);
+			// console.log("previousImgUrl: ", previousImgUrl);
+			deleteFile(previousImgPath);
+		}
+	return res.status(200).json({ deletedRecipe: recipeToBeDeleted });
 });
 
-app.listen(PORT, () => console.log(`Server is listening on port ${PORT}, __dirname: ${__dirname}`));
+const PORT = process.env.PORT || 9000;
+app.listen(PORT, () => console.log(`Server is listening on port ${PORT},
+__dirname: ${__dirname}
+process.cwd(): ${process.cwd()}`));
 
-//  Helper function: If ingredients are provided as filter parameter via the request, '$all' is included in the filter --> modifies filter to only show
-//  recipes that include ALL of the selected incredients
-function generateFilter(requestFilterObj) {
-	const filterObj = { ...requestFilterObj };
+/**
+ * Checks if prop "ingredients" is present in argument obj. If so, MongoDB cmd "$all" is prepended to "ingredient" value -> modifies filter to only show
+ * db entries that include *all* of the selected incredients
+ * @param {Object} reqFilterObj - object containing filter parameters for db query
+ * @returns modified filter obj with "$all" prepended in "ingredients" value
+ */
+function generateFilter(reqFilterObj) {
+	const filterObj = { ...reqFilterObj };
 	if ("ingredients" in filterObj) {
 		filterObj["ingredients"] = { $all: filterObj["ingredients"] };
 	}
 	return filterObj;
+}
+
+/**
+ * Creates new object with added imgUrl property & value (URL string created by Multer w/ UUIDv4) from req.file 
+ * @param {Object} req - request object with image in req.file
+ * @param {Object} patchData - modified object with imgUrl property & value
+ * @returns void
+ */
+function updateImgUrl(req, patchData) {
+	const updatedData = JSON.parse(JSON.stringify(patchData));
+	// console.log("before: ", updatedData)
+	const { filename } = req.file;
+	const imgUrl = `/images/${filename}`;
+	updatedData["imgUrl"] = imgUrl;
+	// console.log("after: ", updatedData)
+	return updatedData;
+}
+
+/**
+ * Deletes file from "/images/[filename].[ext]"
+ * @param {string} url - URL of file to be deleted
+ * @returns void
+ */
+async function deleteFile(url) {
+	try {
+		await fs.unlink(url);
+	} catch (err) {
+		console.error(err);
+	}
 }

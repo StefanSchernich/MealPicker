@@ -20,7 +20,6 @@ export default function IngredientInput({ index, listLength, value, handleIngred
             value={value}
             onChange={(e) => handleIngredientChange(e, index)}
             onKeyDown={handleIngredientEnter}
-            autoFocus
           />
           {listLength > 1 && <button className="plusMinusButton" onClick={(e) => handleRemoveClick(e, index)}>-</button>}
           {listLength - 1 === index && <button className="plusMinusButton" onClick={() => handleIngredientAdd()}>+</button>}

@@ -10,13 +10,13 @@ const initialState = {
 		difficulty: "",
 		ingredients: [],
 	},
-	recipeQuerySuccessful: true, // at least one recipe matching filter criteria exists in database
+	recipeQueryStatus: null,
 	status: null,
 };
 
 export const fetchRandomRecipe = createAsyncThunk("/recipe/fetchRandomRecipe", async (preparedFilterObj) => {
 	const response = await axios.get("http://localhost:9000/fetchRandomRecipe", { params: preparedFilterObj });
-	if (!response.data) throw Error("Kein Rezept gefunden!");
+	if (!response.data) throw new Error("Kein Rezept gefunden!");
 	return response.data;
 });
 
@@ -42,11 +42,14 @@ export const recipeSlice = createSlice({
 		resetStatus: {
 			reducer(state, action) {
 				state.status = null;
-			},
+			}
 		}
 	},
 	extraReducers(builder) {
 		builder
+      .addCase(fetchRandomRecipe.pending, (state, action) => {
+        state.recipeQueryStatus = "loading";
+      })
 			.addCase(fetchRandomRecipe.fulfilled, (state, action) => {
 				state.recipe.title = action.payload.title;
 				state.recipe.imgUrl = action.payload.imgUrl;
@@ -55,10 +58,10 @@ export const recipeSlice = createSlice({
 				state.recipe.difficulty = action.payload.difficulty;
 				state.recipe.ingredients = action.payload.ingredients;
 				state.recipe._id = action.payload._id;
-				state.recipeQuerySuccessful = true;
+				state.recipeQueryStatus = "success";
 			})
 			.addCase(fetchRandomRecipe.rejected, (state, action) => {
-				state.recipeQuerySuccessful = false;
+				state.recipeQueryStatus = "fail";
 			})
 			.addCase(addRecipe.pending, (state, action) => {
 				state.status = "pending";
@@ -66,6 +69,7 @@ export const recipeSlice = createSlice({
 			.addCase(addRecipe.fulfilled, (state, action) => {
 				// action.payload contains the new recipe
 				state.status = "addSucceeded";
+        state.recipeQueryStatus = "success"
 				state.recipe.title = action.payload.title;
 				state.recipe.imgUrl = action.payload.imgUrl;
 				state.recipe.category = action.payload.category;

@@ -20,7 +20,7 @@ export default function AddEditRecipe({ task }) {
   const { title: titleFromDb, imgUrl, category: categoryFromDb, calories: caloriesFromDb, difficulty: diffcultyFromDb, ingredients: ingredientsFromDb  } = recipeData
 
   const initTitle = task === "add" ? "" : titleFromDb
-  const initPreviewVisibility = (task === "add" || !imgUrl) ? false : true    // entweder Add-Formular oder kein Bild hinterlegt --> false
+  const initPreviewVisibility = (task === "add" || !imgUrl) ? false : true    // falls entweder Add-Formular oder kein Bild hinterlegt --> false
   const initCategory = task === "add" ? null : categoryFromDb
   const initCalories = task === "add" ? null : caloriesFromDb
   const initDifficulty = task === "add" ? null : diffcultyFromDb
@@ -79,7 +79,7 @@ export default function AddEditRecipe({ task }) {
     
     // get correct ThunkFn for Adding or Editing
     const thunkFn = task === "add" ? addRecipe({ formData }) : editRecipe({ recipeId, formData })
-    dispatch(thunkFn).unwrap()
+    dispatch(thunkFn)
       .then(() => {
         if (task === "add") {
           setTitle("")
@@ -90,7 +90,7 @@ export default function AddEditRecipe({ task }) {
           setIngredients([""])
         }
         const feedbackElem = document.getElementById("successMsg") || document.querySelect("p.addEditFail")
-        feedbackElem.scrollIntoView()
+        feedbackElem.scrollIntoView({ behavior: "smooth" })
       })
       .catch((err) => console.error(err.message))
   }
@@ -115,10 +115,7 @@ export default function AddEditRecipe({ task }) {
     }
   }, [dispatch])
 
-
   useEffect(() => {
-    // const fileInput = document.getElementById("mealImage")
-    // const files = fileInput.files
     if (mealImg) {
       setPreviewVisible(true)
       setImgSrc(URL.createObjectURL(mealImg))
@@ -144,7 +141,7 @@ export default function AddEditRecipe({ task }) {
       }}>
         <div className="filterSection">
           <label className="filterHeading" htmlFor="title">Titel</label>
-          <input type="text" className="titleInput" id="title" name="title" value={title} onChange={handleTitleChange}></input>
+          <input type="text" className="titleInput" id="title" name="title" value={title} onChange={handleTitleChange} autoFocus></input>
         </div>
         <div className="filterSection">
           <label className="filterHeading" htmlFor="mealImage">Bild</label>
@@ -172,7 +169,11 @@ export default function AddEditRecipe({ task }) {
       {(status === "addSucceeded" || status === "editSucceeded") &&
         <div className="feedbackContainer">
           <p className="addEditSuccess" id="successMsg">Rezept erfolgreich {successVerb}.</p>
-          <p className="successRedirectPrompt">Möchtest du es ansehen? <button className="confirmBtn" onClick={() => navigate("/recipe")}>Ja</button></p>
+          <p className="successRedirectPrompt">Möchtest du es ansehen? <button className="confirmBtn" onClick={() => {
+            navigate("/recipe")
+            const recipeElem = document.querySelector(".recipe")
+            recipeElem?.scrollIntoView({ behavior: "smooth" })
+        }}>Ja</button></p>
         </div>}
     </>
   )
