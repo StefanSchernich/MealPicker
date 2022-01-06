@@ -1,0 +1,50 @@
+.ingredientRow {
+    margin-bottom: 0.5rem;
+}
+
+.ingredientLabel {
+    display: inline-block;
+    font-size: 1rem;
+    font-weight: bold;
+    min-width: 150px;
+}
+
+.ingredientInput {
+    width: calc(100% - 100px);
+    min-width: 254px;
+    max-width: 500px;
+    padding: 0.5%;
+}
+
+.plusMinusButton {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: #fff;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+@media screen and (min-width: 376px) and (max-width: 768px) {
+    .ingredientRow {
+        width: 100%;
+        margin: 1rem auto;
+    }
+    .ingredientLabel {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    .ingredientInput {
+        line-height: 1.5;
+        max-width: none;
+    }
+    .feedbackContainer {
+        text-align: center;
+    }
+}
+@media screen and (max-width: 375px) {
+    .ingredientInput {
+        width: 50%;
+    }
+}

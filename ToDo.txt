@@ -9,6 +9,7 @@
       - neues hinzugefügt
   3.3 Responsiveness Check
 
+8. Buttons schöner machen
 4. Mehr Ingredients ergänzen
 5. Thunks: Delete Recipe macht aktuell nichts im Store --> Muss es ein Thunk sein oder reicht ein 'normaler' async Call mit Axios?
 7. "*" route in backend --> serve index.html

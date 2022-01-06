@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
+require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 const cors = require("cors");
 const multer = require("multer");
 const { v4: uuid4 } = require("uuid");
@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.static("public"));
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		cb(null, path.join(__dirname, "..", "public", "images"));
+		cb(null, path.join(__dirname, "..", "client", "public", "images"));
 	},
 	filename: function (req, file, cb) {
 		cb(null, `${uuid4()}${path.extname(file.originalname)}`);
@@ -61,7 +61,7 @@ app.get("/fetchRandomRecipe", async (req, res) => {
 });
 
 app.post("/addRecipe", upload.single("mealImage"), async (req, res) => {
-  console.log("file in ADD: ", req.file);
+	console.log("file in ADD: ", req.file);
 	// Deal with remaining formData
 	const { title, category, calories, difficulty } = req.body;
 
@@ -79,11 +79,11 @@ app.post("/addRecipe", upload.single("mealImage"), async (req, res) => {
 		difficulty,
 		ingredients: ingredientArr,
 	};
-  if (req.file) {
-    recipeData = 	updateImgUrl(req, recipeData)
-  }
-  console.log("recipeData to be handed to document creation:", recipeData)
-  const newRecipe = await Recipe.create(recipeData);
+	if (req.file) {
+		recipeData = updateImgUrl(req, recipeData);
+	}
+	console.log("recipeData to be handed to document creation:", recipeData);
+	const newRecipe = await Recipe.create(recipeData);
 	return res.status(200).json(newRecipe);
 });
 
@@ -116,12 +116,10 @@ app.patch("/editRecipe/:id", upload.single("mealImage"), async (req, res) => {
 
 		// query for previous recipe in db, look for "imgUrl"-field
 		const previousImg = await Recipe.findById(id, "imgUrl").exec();
-    console.log("previousImg: ", previousImg)
+		console.log("previousImg (EDIT): ", previousImg);
 		if (previousImg.imgUrl) {
-			const previousImgUrl = path.join(__dirname, "..", "public", previousImg.imgUrl)   // path to previous image
-			console.log("typeof previousImgUrl: ", typeof previousImgUrl);
-			console.log("previousImgUrl: ", previousImgUrl);
-			deleteFile(previousImgUrl);
+			const previousImgPath = path.join(__dirname, "..", "client", "public", previousImg.imgUrl); // path to previous image
+			deleteFile(previousImgPath);
 		}
 	}
 	const editedRecipe = await Recipe.findByIdAndUpdate(id, patchData, { returnDocument: "after" }).exec();
@@ -129,22 +127,25 @@ app.patch("/editRecipe/:id", upload.single("mealImage"), async (req, res) => {
 });
 
 app.delete("/deleteRecipe/:id", async (req, res) => {
+	console.log("DELETE TRIGGERED");
 	const { id } = req.params;
 	const recipeToBeDeleted = await Recipe.findByIdAndDelete(id).exec();
-  const previousImgUrl = recipeToBeDeleted.imgUrl
-		if (previousImgUrl) {
-			const previousImgPath = path.join(__dirname, "..", "public", previousImgUrl)
-			// console.log("typeof previousImgUrl: ", typeof previousImgUrl);
-			// console.log("previousImgUrl: ", previousImgUrl);
-			deleteFile(previousImgPath);
-		}
+	const previousImgUrl = recipeToBeDeleted.imgUrl;
+	if (previousImgUrl) {
+		const previousImgPath = path.join(__dirname, "..", "client", "public", previousImgUrl); // path to previous image
+		console.log("typeof previousImgUrl (DELETE): ", typeof previousImgUrl);
+		console.log("previousImgUrl (DELETE): ", previousImgUrl);
+		deleteFile(previousImgPath);
+	}
 	return res.status(200).json({ deletedRecipe: recipeToBeDeleted });
 });
 
 const PORT = process.env.PORT || 9000;
-app.listen(PORT, () => console.log(`Server is listening on port ${PORT},
+app.listen(PORT, () =>
+	console.log(`Server is listening on port ${PORT},
 __dirname: ${__dirname}
-process.cwd(): ${process.cwd()}`));
+process.cwd(): ${process.cwd()}`)
+);
 
 /**
  * Checks if prop "ingredients" is present in argument obj. If so, MongoDB cmd "$all" is prepended to "ingredient" value -> modifies filter to only show
@@ -161,7 +162,7 @@ function generateFilter(reqFilterObj) {
 }
 
 /**
- * Creates new object with added imgUrl property & value (URL string created by Multer w/ UUIDv4) from req.file 
+ * Creates new object with added imgUrl property & value (URL string created by Multer w/ UUIDv4) from req.file
  * @param {Object} req - request object with image in req.file
  * @param {Object} patchData - modified object with imgUrl property & value
  * @returns void
