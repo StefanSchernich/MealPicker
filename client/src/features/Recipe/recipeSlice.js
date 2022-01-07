@@ -15,23 +15,23 @@ const initialState = {
 };
 
 export const fetchRandomRecipe = createAsyncThunk("/recipe/fetchRandomRecipe", async (preparedFilterObj) => {
-    const response = await axios.get("http://localhost:9000/fetchRandomRecipe", { params: preparedFilterObj });
+    const response = await axios.get("/fetchRandomRecipe", { params: preparedFilterObj });
     if (!response.data) throw new Error("Kein Rezept gefunden!");
     return response.data;
 });
 
 export const addRecipe = createAsyncThunk("/recipe/addRecipe", async ({ formData: newRecipe }) => {
-    const response = await axios.post("http://localhost:9000/addRecipe", newRecipe);
+    const response = await axios.post("/addRecipe", newRecipe);
     return response.data;
 });
 
 export const editRecipe = createAsyncThunk("/recipe/editRecipe", async ({ recipeId, formData: editedRecipe }) => {
-    const response = await axios.patch(`http://localhost:9000/editRecipe/${recipeId}`, editedRecipe);
+    const response = await axios.patch(`/editRecipe/${recipeId}`, editedRecipe);
     return response.data;
 });
 
 export const deleteRecipe = createAsyncThunk("/recipe/deleteRecipe", async (recipeId) => {
-    const response = await axios.delete(`http://localhost:9000/deleteRecipe/${recipeId}`);
+    const response = await axios.delete(`/deleteRecipe/${recipeId}`);
     return response.data;
 });
 

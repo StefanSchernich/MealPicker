@@ -14,3 +14,4 @@ yarn-error.log*
 .npm/
 public/images/
 .env
+ToDo.txt
