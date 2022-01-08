@@ -10,20 +10,20 @@ import Recipe from "./features/Recipe/Recipe";
 import AddEditRecipe from "./components/AddEditRecipe";
 
 ReactDOM.render(
-    <BrowserRouter>
-        <Provider store={store}>
-            <Routes>
-                <Route element={<Layout />}>
-                    <Route path='/' element={<Filter />}>
-                        <Route index element={<p className='noRecipePlaceholder'>Kein Rezept ausgewählt</p>} />
-                        <Route path='recipe' element={<Recipe />} disableScrollToTop={true} />
-                    </Route>
-                    <Route path='/addRecipe' element={<AddEditRecipe task='add' />} />
-                    <Route path='/editRecipe/:recipeId' element={<AddEditRecipe task='edit' />} />
-                </Route>
-                <Route path='*' element={<div>404 - Page not found</div>} />
-            </Routes>
-        </Provider>
-    </BrowserRouter>,
-    document.getElementById("root")
+	<BrowserRouter>
+		<Provider store={store}>
+			<Routes>
+				<Route element={<Layout />}>
+					<Route path='/' element={<Filter />}>
+						<Route index element={<p className='noRecipePlaceholder'>Kein Rezept ausgewählt</p>} />
+						<Route path='recipe' element={<Recipe />} />
+					</Route>
+					<Route path='/addRecipe' element={<AddEditRecipe task='add' />} />
+					<Route path='/editRecipe/:recipeId' element={<AddEditRecipe task='edit' />} />
+				</Route>
+				<Route path='*' element={<div>404 - Page not found</div>} />
+			</Routes>
+		</Provider>
+	</BrowserRouter>,
+	document.getElementById("root")
 );
