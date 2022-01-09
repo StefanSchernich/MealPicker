@@ -7,6 +7,7 @@ import { categoryOptions, caloryOptions, difficultyOptions } from "../app/data/d
 import RadioFilterSection from "./subcomponents/RadioFilterSection";
 import { useNavigate, useParams } from "react-router-dom";
 import { markCheckedInputs } from "../app/utilityFunctions";
+import axios from "axios";
 
 export default function AddEditRecipe({ task }) {
 	// recipeId only required for Edit
@@ -47,7 +48,29 @@ export default function AddEditRecipe({ task }) {
 		setTitle(e.target.value);
 	}
 	function handleMealImgChange(e) {
-		setMealImg(e.target.files[0]);
+		const imgFile = e.target.files[0];
+		getSignedRequest(imgFile);
+		setMealImg(imgFile);
+
+		function getSignedRequest(file) {
+			axios
+				.get(`/sign-s3?file-name=${file.name}&file-type=${file.type}`)
+				.then((res) => {
+					// console.log("sign-s3 response: ", res.data);
+					uploadFile(file, res.data.signedRequest, res.data.url);
+				})
+				.catch((err) => console.error("Could not get signed URL."));
+
+			function uploadFile(file, signedRequest, url) {
+				// console.log("arguments of 'uploadFile' Fn: ", file, signedRequest, url);
+				axios
+					.put(signedRequest, file)
+					.then(() => {
+						setImgSrc(url);
+					})
+					.catch((err) => console.error("Could not upload file. " + err));
+			}
+		}
 	}
 	function handleCategoryChange(e) {
 		setCategory(e.target.value);
@@ -79,9 +102,14 @@ export default function AddEditRecipe({ task }) {
 
 	function handleSubmit(e) {
 		e.preventDefault(); // default: refresh of entire page
-		const recipeForm = document.getElementById("recipeForm");
-		const formData = new FormData(recipeForm);
-		formData.append("mealImage", mealImg);
+		const formData = {
+			title,
+			imgUrl: imgSrc,
+			category,
+			calories,
+			difficulty,
+			ingredients,
+		};
 
 		// get correct ThunkFn for Adding or Editing
 		const thunkFn = task === "add" ? addRecipe({ formData }) : editRecipe({ recipeId, formData });
@@ -142,7 +170,6 @@ export default function AddEditRecipe({ task }) {
 			<form
 				id='recipeForm'
 				onSubmit={handleSubmit}
-				encType='multipart/form-data'
 				onKeyDown={(e) => {
 					// Enter soll neue Input-Zeile erzeugen, nicht Formular submitten
 					if (e.key === "Enter") {
