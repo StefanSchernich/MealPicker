@@ -28,15 +28,11 @@ export default function Recipe(props) {
 			<div className='recipe' id='recipe'>
 				<h2 className='recipeTitle'>{title}</h2>
 				{imgUrl && <img className='recipeImg' src={imgUrl} alt={title} />}
-				<p className='recipeDescription'>
-					<b>Kategorie:</b> {category}
-				</p>
-				<p className='recipeDescription'>
-					<b>Kalorien:</b> {calories}
-				</p>
-				<p className='recipeDescription'>
-					<b>Schwierigkeit:</b> {difficulty}
-				</p>
+				<div className='descriptionContainer'>
+					<p className='recipeDescription'>{category}</p>
+					<p className='recipeDescription'>{calories}</p>
+					<p className='recipeDescription'>{difficulty}</p>
+				</div>
 				<ul>{ingredientList}</ul>
 				<Link className='edit' to={`/editRecipe/${recipeId}`}>
 					Rezept editieren ✏️

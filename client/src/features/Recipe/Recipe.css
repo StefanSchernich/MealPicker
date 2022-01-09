@@ -2,7 +2,6 @@
 	display: block;
 	width: 100%;
 	max-width: 500px;
-	min-height: 500px;
 	margin: 0.25rem auto;
 	padding: 1.5rem;
 	text-align: center;
@@ -23,8 +22,23 @@
 	border-radius: 15px;
 }
 
+.descriptionContainer {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	gap: 1rem;
+}
+
 .recipeDescription {
-	line-height: 2;
+	padding-right: 1rem;
+	font-size: 1.1rem;
+	font-weight: bold;
+	border-right: 2px solid black;
+}
+
+.recipeDescription:last-child {
+	border: none;
+	padding-right: 0;
 }
 
 .recipe ul {

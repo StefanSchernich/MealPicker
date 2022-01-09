@@ -11,16 +11,16 @@ const fs = require("fs").promises;
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.resolve(__dirname, '../client/build/static')));
+app.use(express.static(path.resolve(__dirname, "../client/build")));
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-    let imageDest = ""
-    if (process.env.NODE_ENV === "development") {
-      imageDest = path.join(__dirname, "..", "client", "public", "images")
-    } else {
-      imageDest = path.join(__dirname, "..", "client", "build", "static", "images")
-    }
-    console.log("imageDest: ", imageDest)
+		let imageDest = "";
+		if (process.env.NODE_ENV === "development") {
+			imageDest = path.join(__dirname, "..", "client", "public", "images");
+		} else {
+			imageDest = path.join(__dirname, "..", "client", "build", "images");
+		}
+		console.log("imageDest: ", imageDest);
 		cb(null, imageDest);
 	},
 	filename: function (req, file, cb) {
@@ -125,12 +125,12 @@ app.patch("/editRecipe/:id", upload.single("mealImage"), async (req, res) => {
 		const previousImg = await Recipe.findById(id, "imgUrl").exec();
 		console.log("previousImg (EDIT): ", previousImg);
 		if (previousImg.imgUrl) {
-      let previousImgPath = ""    // path to previous image
-      if (process.env.NODE_ENV === "development") {
-        previousImgPath = path.join(__dirname, "..", "client", "public", previousImg.imgUrl)
-      } else {
-        previousImgPath = path.join(__dirname, "..", "client", "build", "static", previousImg.imgUrl)
-      }
+			let previousImgPath = ""; // path to previous image
+			if (process.env.NODE_ENV === "development") {
+				previousImgPath = path.join(__dirname, "..", "client", "public", previousImg.imgUrl);
+			} else {
+				previousImgPath = path.join(__dirname, "..", "client", "build", previousImg.imgUrl);
+			}
 			deleteFile(previousImgPath);
 		}
 	}
@@ -144,12 +144,12 @@ app.delete("/deleteRecipe/:id", async (req, res) => {
 	const recipeToBeDeleted = await Recipe.findByIdAndDelete(id).exec();
 	const previousImgUrl = recipeToBeDeleted.imgUrl;
 	if (previousImgUrl) {
-    let previousImgPath = ""    // path to previous image
-    if (process.env.NODE_ENV === "development") {
-      previousImgPath = path.join(__dirname, "..", "client", "public", previousImgUrl)
-    } else {
-      previousImgPath = path.join(__dirname, "..", "client", "build", "static", previousImgUrl)
-    }
+		let previousImgPath = ""; // path to previous image
+		if (process.env.NODE_ENV === "development") {
+			previousImgPath = path.join(__dirname, "..", "client", "public", previousImgUrl);
+		} else {
+			previousImgPath = path.join(__dirname, "..", "client", "build", previousImgUrl);
+		}
 		console.log("typeof previousImgUrl (DELETE): ", typeof previousImgUrl);
 		console.log("previousImgUrl (DELETE): ", previousImgUrl);
 		deleteFile(previousImgPath);
@@ -157,8 +157,8 @@ app.delete("/deleteRecipe/:id", async (req, res) => {
 	return res.status(200).json({ deletedRecipe: recipeToBeDeleted });
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+app.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
