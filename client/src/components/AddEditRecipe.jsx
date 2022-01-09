@@ -95,20 +95,21 @@ export default function AddEditRecipe({ task }) {
 	function handleIngredientChange(e, index) {
 		setIngredients((prevState) => {
 			const newIngredientsList = [...prevState];
-			newIngredientsList[index] = e.target.value.trim();
+			newIngredientsList[index] = e.target.value;
 			return newIngredientsList;
 		});
 	}
 
 	function handleSubmit(e) {
 		e.preventDefault(); // default: refresh of entire page
+		const sanitizedIngredients = ingredients.map((ingredient) => ingredient.trim());
 		const formData = {
 			title,
 			imgUrl: imgSrc,
 			category,
 			calories,
 			difficulty,
-			ingredients,
+			ingredients: sanitizedIngredients,
 		};
 
 		// get correct ThunkFn for Adding or Editing
