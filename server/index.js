@@ -86,18 +86,6 @@ app.delete("/deleteRecipe/:id", async (req, res) => {
 	console.log("DELETE TRIGGERED");
 	const { id } = req.params;
 	const recipeToBeDeleted = await Recipe.findByIdAndDelete(id).exec();
-	const previousImgUrl = recipeToBeDeleted.imgUrl;
-	if (previousImgUrl) {
-		let previousImgPath = ""; // path to previous image
-		if (process.env.NODE_ENV === "development") {
-			previousImgPath = path.join(__dirname, "..", "client", "public", previousImgUrl);
-		} else {
-			previousImgPath = path.join(__dirname, "..", "client", "build", previousImgUrl);
-		}
-		console.log("typeof previousImgUrl (DELETE): ", typeof previousImgUrl);
-		console.log("previousImgUrl (DELETE): ", previousImgUrl);
-		deleteFile(previousImgPath);
-	}
 	return res.status(200).json({ deletedRecipe: recipeToBeDeleted });
 });
 
