@@ -67,6 +67,14 @@ export default function Filter(props) {
 		markCheckedInputs();
 	}, [category, calories, difficulty, ingredients]);
 
+	// Resette Filter beim Mouting / Rückkehr von Rezeptseiten
+	useEffect(() => {
+		setCategory("");
+		setCalories("");
+		setDifficulty("");
+		setIngredients([]);
+	}, []);
+
 	return (
 		<>
 			<div className='filter'>

@@ -1,5 +1,5 @@
 import "../features/Filter/Filter.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addRecipe, editRecipe, resetStatus } from "../features/Recipe/recipeSlice";
 import IngredientInput from "./subcomponents/IngredientInput";
@@ -15,6 +15,7 @@ export default function AddEditRecipe({ task }) {
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+	const titleRef = useRef();
 
 	const recipeData = useSelector((state) => state.recipe.recipe);
 	const {
@@ -102,7 +103,12 @@ export default function AddEditRecipe({ task }) {
 
 	function handleSubmit(e) {
 		e.preventDefault(); // default: refresh of entire page
-		const sanitizedIngredients = ingredients.map((ingredient) => ingredient.trim());
+		const sanitizedIngredients = ingredients.reduce((acc, ingredient) => {
+			if (ingredient) {
+				acc.push(ingredient.trim());
+			}
+			return acc;
+		}, []);
 		const formData = {
 			title,
 			imgUrl: imgSrc,
@@ -150,12 +156,18 @@ export default function AddEditRecipe({ task }) {
 		};
 	}, [dispatch]);
 
+	// Einblenden von Preview nur, wenn ein Bild vorhanden ist
 	useEffect(() => {
 		if (mealImg) {
 			setPreviewVisible(true);
 			setImgSrc(URL.createObjectURL(mealImg));
 		}
 	}, [mealImg]);
+
+	// Title-Input nach Mounting fokussieren
+	useEffect(() => {
+		titleRef.current.focus();
+	}, []);
 
 	// Background der Input-Felder resetten, wenn sich State geändert hat
 	useEffect(() => {
@@ -182,7 +194,15 @@ export default function AddEditRecipe({ task }) {
 					<label className='filterHeading' htmlFor='title'>
 						Titel
 					</label>
-					<input type='text' className='titleInput' id='title' name='title' value={title} onChange={handleTitleChange} autoFocus></input>
+					<input
+						type='text'
+						ref={titleRef}
+						className='titleInput'
+						id='title'
+						name='title'
+						value={title}
+						onChange={handleTitleChange}
+						autoFocus></input>
 				</div>
 				<div className='filterSection'>
 					<label className='filterHeading' htmlFor='mealImage'>
@@ -238,17 +258,3 @@ export default function AddEditRecipe({ task }) {
 		</>
 	);
 }
-
-// Helper, um bestehendes Rezeptbild für Edit-Fomular aus DB zu holen. Wieder-Hochladen hat nicht funktioniert --> on hold
-// async function fetchMealImg(filePath) {
-//   try {
-//     const mealImg = await axios.get("http://localhost:9000/fetchMealImg", {
-//       params: {
-//         "filePath": filePath
-//       }
-//     })
-//     return mealImg.data
-//   } catch (error) {
-//     console.error(error.message)
-//   }
-// }

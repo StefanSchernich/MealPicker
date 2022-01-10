@@ -1,5 +1,6 @@
 fieldset {
 	padding: 1.5rem;
+	margin-bottom: 0.5rem;
 }
 
 .heading {
@@ -23,8 +24,15 @@ fieldset {
 	margin-bottom: clamp(0.5rem, 5%, 1rem);
 }
 
+.filterOptions {
+	display: inline-flex;
+	flex-flow: row wrap;
+	width: calc(100% - 150px);
+	gap: 1.5rem;
+}
+
 .filterOption {
-	padding: 6px;
+	padding: 0.5rem;
 	border-radius: 5px;
 	transition: background-color 0.2s;
 }
@@ -35,13 +43,6 @@ fieldset {
 
 .filterOption:hover {
 	background-color: rgb(231, 230, 230);
-}
-
-.filterOptions {
-	display: inline-flex;
-	flex-flow: row wrap;
-	width: calc(100% - 150px);
-	gap: 1.5rem;
 }
 
 label {
@@ -111,8 +112,7 @@ input[type="submit"],
 
 @media screen and (max-width: 768px) {
 	fieldset {
-		margin: 0;
-		padding: 5%;
+		padding: 5% 0;
 	}
 
 	.heading {
