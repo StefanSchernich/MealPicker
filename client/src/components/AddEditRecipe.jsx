@@ -9,7 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { markCheckedInputs } from "../app/utilityFunctions";
 import axios from "axios";
 
-export default function AddEditRecipe({ task }) {
+export default function AddEditRecipe({ purpose }) {
 	// recipeId only required for Edit
 	const { recipeId } = useParams();
 
@@ -28,20 +28,19 @@ export default function AddEditRecipe({ task }) {
 		ingredients: ingredientsFromDb,
 	} = recipeData;
 
-	// Prepare initial values for useState depending on whether purpose of component is edit or add
-	function taskIsAdd(task) {
-		return task === "add";
+	// Prepare initial values for useState depending on whether purpose of component is to 'edit' or 'add' recipe
+	function purposeIsAdd(purpose) {
+		return purpose === "add";
 	}
-	const initTitle = taskIsAdd(task) ? "" : titleFromDb;
-	const initImgUrl = taskIsAdd(task) ? "" : imgUrlFromDb;
-	const initPreviewVisibility = taskIsAdd(task) || !initImgUrl ? false : true; // falls entweder Add-Formular oder kein Bild hinterlegt --> false
-	const initCategory = taskIsAdd(task) ? null : categoryFromDb;
-	const initCalories = taskIsAdd(task) ? null : caloriesFromDb;
-	const initDifficulty = taskIsAdd(task) ? null : diffcultyFromDb;
-	const initIngredients = taskIsAdd(task) || ingredientsFromDb.length === 0 ? [""] : ingredientsFromDb;
+	const initTitle = purposeIsAdd(purpose) ? "" : titleFromDb;
+	const initImgUrl = purposeIsAdd(purpose) ? "" : imgUrlFromDb;
+	const initPreviewVisibility = purposeIsAdd(purpose) || !initImgUrl ? false : true; // falls entweder Add-Formular oder kein Bild hinterlegt --> false
+	const initCategory = purposeIsAdd(purpose) ? null : categoryFromDb;
+	const initCalories = purposeIsAdd(purpose) ? null : caloriesFromDb;
+	const initDifficulty = purposeIsAdd(purpose) ? null : diffcultyFromDb;
+	const initIngredients = purposeIsAdd(purpose) || ingredientsFromDb.length === 0 ? [""] : ingredientsFromDb;
 
 	const [title, setTitle] = useState(initTitle);
-	const [mealImg, setMealImg] = useState();
 	const [category, setCategory] = useState(initCategory);
 	const [calories, setCalories] = useState(initCalories);
 	const [difficulty, setDifficulty] = useState(initDifficulty);
@@ -55,7 +54,6 @@ export default function AddEditRecipe({ task }) {
 	function handleMealImgChange(e) {
 		const imgFile = e.target.files[0];
 		getSignedRequest(imgFile);
-		setMealImg(imgFile);
 
 		function getSignedRequest(file) {
 			axios
@@ -71,6 +69,7 @@ export default function AddEditRecipe({ task }) {
 				axios
 					.put(signedRequest, file) // signedRequest is an AWS S3 URL with embedded credentials
 					.then(() => {
+						// console.log("setImgSrc to url: " + url);
 						setImgSrc(url);
 					})
 					.catch((err) => console.error("Could not upload file. " + err));
@@ -123,16 +122,16 @@ export default function AddEditRecipe({ task }) {
 		};
 
 		// get correct ThunkFn for Adding or Editing
-		const thunkFn = task === "add" ? addRecipe({ formData }) : editRecipe({ recipeId, formData });
+		const thunkFn = purposeIsAdd(purpose) ? addRecipe({ formData }) : editRecipe({ recipeId, formData });
 		dispatch(thunkFn)
 			.then(() => {
-				if (task === "add") {
+				if (purposeIsAdd(purpose)) {
 					setTitle("");
-					setMealImg(null);
 					setCategory(null);
 					setCalories(null);
 					setDifficulty(null);
 					setIngredients([""]);
+					setImgSrc("");
 				}
 				const feedbackElem = document.getElementById("successMsg") || document.querySelector("p.addEditFail");
 				feedbackElem.scrollIntoView({ behavior: "smooth" });
@@ -162,11 +161,10 @@ export default function AddEditRecipe({ task }) {
 
 	// Einblenden von Preview nur, wenn ein Bild vorhanden ist
 	useEffect(() => {
-		if (mealImg) {
+		if (imgSrc) {
 			setPreviewVisible(true);
-			setImgSrc(URL.createObjectURL(mealImg));
 		}
-	}, [mealImg]);
+	}, [imgSrc]);
 
 	// Title-Input nach Mounting fokussieren
 	useEffect(() => {
@@ -178,8 +176,8 @@ export default function AddEditRecipe({ task }) {
 		markCheckedInputs();
 	}, [category, calories, difficulty]);
 
-	const titleText = task === "add" ? "Neues Rezept hinzufügen" : "Rezept editieren";
-	const successVerb = task === "add" ? "hinzugefügt" : "editiert";
+	const titleText = purposeIsAdd(purpose) ? "Neues Rezept hinzufügen" : "Rezept editieren";
+	const successVerb = purposeIsAdd(purpose) ? "hinzugefügt" : "editiert";
 
 	return (
 		<>

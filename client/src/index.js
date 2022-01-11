@@ -18,8 +18,8 @@ ReactDOM.render(
 						<Route index element={<p className='noRecipePlaceholder'>Kein Rezept ausgewählt</p>} />
 						<Route path='recipe' element={<Recipe />} />
 					</Route>
-					<Route path='/addRecipe' element={<AddEditRecipe task='add' />} />
-					<Route path='/editRecipe/:recipeId' element={<AddEditRecipe task='edit' />} />
+					<Route path='/addRecipe' element={<AddEditRecipe purpose='add' />} />
+					<Route path='/editRecipe/:recipeId' element={<AddEditRecipe purpose='edit' />} />
 				</Route>
 				<Route path='*' element={<div>404 - Page not found</div>} />
 			</Routes>
