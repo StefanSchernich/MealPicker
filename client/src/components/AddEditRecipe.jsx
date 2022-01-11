@@ -18,23 +18,27 @@ export default function AddEditRecipe({ task }) {
 	const titleRef = useRef();
 
 	const recipeData = useSelector((state) => state.recipe.recipe);
+	const status = useSelector((state) => state.recipe.status);
 	const {
 		title: titleFromDb,
-		imgUrl,
+		imgUrl: imgUrlFromDb,
 		category: categoryFromDb,
 		calories: caloriesFromDb,
 		difficulty: diffcultyFromDb,
 		ingredients: ingredientsFromDb,
 	} = recipeData;
 
-	const initTitle = task === "add" ? "" : titleFromDb;
-	const initPreviewVisibility = task === "add" || !imgUrl ? false : true; // falls entweder Add-Formular oder kein Bild hinterlegt --> false
-	const initCategory = task === "add" ? null : categoryFromDb;
-	const initCalories = task === "add" ? null : caloriesFromDb;
-	const initDifficulty = task === "add" ? null : diffcultyFromDb;
-	const initIngredients = task === "add" ? [""] : ingredientsFromDb.length > 0 ? ingredientsFromDb : [""];
-
-	const status = useSelector((state) => state.recipe.status);
+	// Prepare initial values for useState depending on whether purpose of component is edit or add
+	function taskIsAdd(task) {
+		return task === "add";
+	}
+	const initTitle = taskIsAdd(task) ? "" : titleFromDb;
+	const initImgUrl = taskIsAdd(task) ? "" : imgUrlFromDb;
+	const initPreviewVisibility = taskIsAdd(task) || !initImgUrl ? false : true; // falls entweder Add-Formular oder kein Bild hinterlegt --> false
+	const initCategory = taskIsAdd(task) ? null : categoryFromDb;
+	const initCalories = taskIsAdd(task) ? null : caloriesFromDb;
+	const initDifficulty = taskIsAdd(task) ? null : diffcultyFromDb;
+	const initIngredients = taskIsAdd(task) || ingredientsFromDb.length === 0 ? [""] : ingredientsFromDb;
 
 	const [title, setTitle] = useState(initTitle);
 	const [mealImg, setMealImg] = useState();
@@ -43,7 +47,7 @@ export default function AddEditRecipe({ task }) {
 	const [difficulty, setDifficulty] = useState(initDifficulty);
 	const [ingredients, setIngredients] = useState(initIngredients);
 	const [previewVisible, setPreviewVisible] = useState(initPreviewVisibility);
-	const [imgSrc, setImgSrc] = useState(imgUrl);
+	const [imgSrc, setImgSrc] = useState(initImgUrl);
 
 	function handleTitleChange(e) {
 		setTitle(e.target.value);
@@ -65,7 +69,7 @@ export default function AddEditRecipe({ task }) {
 			function uploadFile(file, signedRequest, url) {
 				// console.log("arguments of 'uploadFile' Fn: ", file, signedRequest, url);
 				axios
-					.put(signedRequest, file)
+					.put(signedRequest, file) // signedRequest is an AWS S3 URL with embedded credentials
 					.then(() => {
 						setImgSrc(url);
 					})
