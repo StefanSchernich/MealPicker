@@ -1,11 +1,12 @@
 fieldset {
-	padding: 1.5rem;
+	padding: 1.5rem 0;
 	margin-bottom: 0.5rem;
+	border: none;
 }
 
 .heading {
 	line-height: 3rem;
-	margin-bottom: 1.5rem;
+	margin: 1.5rem 0;
 }
 
 .titleInput {
@@ -116,7 +117,6 @@ input[type="submit"],
 	}
 
 	.heading {
-		margin-top: 1rem;
 		text-align: center;
 	}
 
