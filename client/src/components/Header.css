@@ -1,72 +1,70 @@
 header {
-  display: flex;
-  justify-content: space-between;
-  background-color: rgb(102, 207, 255);
+	display: flex;
+	justify-content: space-between;
+	padding: 0 0 0 1.5%;
+	background-color: rgb(102, 207, 255);
 }
 
 .pageHeader {
-  cursor: pointer;
-  display: flex;
-  margin-left: .5%;
-  align-items: center;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
 }
 
 .pageTitle {
-  display: inline-block;
-  font-size: 2rem;
-  margin: 0;
+	display: inline-block;
+	font-size: 2rem;
+	margin: 0;
 }
 
 .fancyWord {
-  font-weight: normal;
-  font-family: "Pushster", cursive;
+	font-weight: normal;
+	font-family: "Pushster", cursive;
 }
 
 nav {
-  display: flex;
-  width: 50%;
-  justify-content: flex-end;
-  align-items: center;
+	display: flex;
+	width: 50%;
+	justify-content: flex-end;
+	align-items: center;
 }
 
 nav > a {
-  min-width: 250px;
-  width: 30%;
-  line-height: 70px;
-  font-weight: bold;
-  color: black;
-  text-decoration: none;
-  text-align: center;
-  transition: all 0.2s ease-in;
+	min-width: 250px;
+	width: 25%;
+	line-height: 70px;
+	font-weight: bold;
+	color: black;
+	text-decoration: none;
+	text-align: center;
+	transition: all 0.2s ease-in;
 }
 
 nav > a:hover {
-  color: white;
-  background-color: black;
+	color: white;
+	background-color: black;
 }
 
 @media screen and (max-width: 768px) {
-  header {
-    display: block;
-  }
-  .pageHeader {
-    display: block;
-    margin: auto;
-    text-align: center;
-  }
+	header {
+		display: block;
+		padding: 0;
+	}
+	.pageHeader {
+		display: block;
+		margin: auto;
+		text-align: center;
+		line-height: 1.5;
+	}
 
-  .pageLogo {
-    display: none;
-  }
+	nav {
+		display: block;
+		width: 100%;
+	}
 
-  nav {
-    display: block;
-    width: 100%;
-  }
-
-  nav > a {
-    display: block;
-    line-height: 2;
-    width: 100%;
-  }
+	nav > a {
+		display: block;
+		width: 100%;
+		line-height: 2.5;
+	}
 }
