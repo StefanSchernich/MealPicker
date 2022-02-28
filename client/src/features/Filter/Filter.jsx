@@ -15,6 +15,8 @@ export default function Filter(props) {
 	const [category, setCategory] = useState("");
 	const [calories, setCalories] = useState("");
 	const [difficulty, setDifficulty] = useState("");
+	const [ingrFilterVisible, setIngrFilterVisible] = useState(false);
+	const [ingSearchTerm, setIngSearchTerm] = useState("");
 	const [ingredients, setIngredients] = useState([]);
 
 	function handleCategoryChange(e) {
@@ -34,32 +36,43 @@ export default function Filter(props) {
 		});
 	}
 
+	function handleTextSearchChange({ target: { value } }) {
+		setIngSearchTerm(value);
+	}
+
+	function handleIngFilterVisibility(e) {
+		e.preventDefault();
+		setIngrFilterVisible((prevState) => !prevState);
+	}
+
 	function handleFilterFormReset(e) {
 		e.preventDefault();
 		setCategory("");
 		setCalories("");
 		setDifficulty("");
 		setIngredients([]);
+		setIngSearchTerm("");
 	}
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		let checkedAndTextIngredients = [...ingredients, capitalizeString(ingSearchTerm)];
 		const filter = {
 			category,
 			calories,
 			difficulty,
-			ingredients,
+			ingredients: ingSearchTerm ? checkedAndTextIngredients : ingredients,
 		};
 		const sanitizedFilterObj = sanitizeObj(filter);
 		dispatch(fetchRandomRecipe(sanitizedFilterObj))
 			.then(() => {
 				navigate("/recipe");
-				const recipeElem = document.querySelector(".recipe"); //
+				const recipeElem = document.querySelector(".recipe");
 				recipeElem?.scrollIntoView({ block: "start", behavior: "smooth" });
 				const warningElem = document.querySelector(".warning"); // will render if no recipe found
 				warningElem?.scrollIntoView({ behavior: "smooth" });
 			})
-			.catch((err) => console.log(err.message));
+			.catch((err) => console.error(err.message));
 	};
 
 	// Background der Input-Felder resetten, wenn sich State geändert hat
@@ -67,12 +80,25 @@ export default function Filter(props) {
 		markCheckedInputs();
 	}, [category, calories, difficulty, ingredients]);
 
+	// Event-Listener für "Enter"
+	useEffect(() => {
+		function handleEnter(e) {
+			if (e.key === "Enter") {
+				handleSubmit(e);
+			}
+		}
+
+		document.addEventListener("keydown", handleEnter);
+		return () => document.removeEventListener("keydown", handleEnter);
+	});
+
 	// Resette Filter beim Mouting / Rückkehr von Rezeptseiten
 	useEffect(() => {
 		setCategory("");
 		setCalories("");
 		setDifficulty("");
 		setIngredients([]);
+		setIngSearchTerm("");
 	}, []);
 
 	return (
@@ -107,8 +133,16 @@ export default function Filter(props) {
 							{" "}
 							Schwierigkeit
 						</RadioFilterSection>
-						<div className='filterSection'>
+						<button id='ingFilterVisibilityBtn' onClick={handleIngFilterVisibility}>
+							{ingrFilterVisible ? "Zutatenfilter ausblenden" : "Zutatenfilter einblenden"}
+						</button>
+						<div className='filterSection ingFilter' style={ingrFilterVisible ? { maxHeight: 10000 } : { maxHeight: 0 }}>
 							<span className='filterHeading'>Zutaten</span>
+							<div className='textSearchContainer'>
+								<input id='ingTextSearch' type='text' placeholder='Zutat' value={ingSearchTerm} onChange={handleTextSearchChange} />
+								<i className='fa-solid fa-magnifying-glass'></i>
+							</div>
+
 							<div className='filterOptions'>
 								{ingredientOptions.map(({ id, value, icon }) => {
 									return (
@@ -152,3 +186,13 @@ function sanitizeObj(filterObj) {
 	}
 	return preparedFilterObj;
 }
+
+function capitalizeString(str) {
+	return str ? str[0].toUpperCase() + str.slice(1) : "";
+}
+
+/* User Story Textsuche:
+  1. Es gibt ein Input-Feld, in welches ich Text eintragen kann.
+  2. Beim Suchen eines Rezepts werden nur solche vorgeschlagen, die die Zutat enthalten.
+  3. Mit dem gleichen Button ("Zutatenfilter ausblenden") kann der Filter wieder ausgeblendet werden.
+*/

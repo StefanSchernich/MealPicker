@@ -25,11 +25,50 @@ fieldset {
 	margin-bottom: clamp(0.5rem, 5%, 1rem);
 }
 
+.ingFilter {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease;
+}
+
+#ingFilterVisibilityBtn {
+	display: block;
+	margin-bottom: 1rem;
+	padding: 0.75rem;
+	border-radius: 8px;
+	font-weight: bold;
+	font-size: 1rem;
+}
+
 .filterOptions {
 	display: inline-flex;
 	flex-flow: row wrap;
 	width: calc(100% - 150px);
 	gap: 1.5rem;
+}
+
+.textSearchContainer {
+	display: flex;
+	position: relative;
+	flex-flow: row nowrap;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+#ingTextSearch {
+	line-height: 2rem;
+	display: inline-block;
+	width: 100%;
+	padding: 0 0.5rem;
+	border-radius: 8px;
+}
+
+i {
+	display: inline-block;
+	position: absolute;
+	right: 0.5rem;
+	top: 0.1rem;
+	color: grey;
 }
 
 .filterOption {
@@ -135,6 +174,10 @@ input[type="submit"],
 		line-height: 1.5;
 	}
 
+	#ingTextSearch {
+		width: 100%;
+	}
+
 	.filterSection {
 		text-align: center;
 	}
@@ -146,7 +189,8 @@ input[type="submit"],
 	}
 
 	input[type="submit"],
-	.resetBtn {
+	.resetBtn,
+	#ingFilterVisibilityBtn {
 		display: block;
 		width: 75%;
 		margin: 1.5rem auto 1rem auto;

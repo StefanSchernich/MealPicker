@@ -34,7 +34,7 @@ export default function AddEditRecipe({ purpose }) {
 	}
 	const initTitle = purposeIsAdd(purpose) ? "" : titleFromDb;
 	const initImgUrl = purposeIsAdd(purpose) ? "" : imgUrlFromDb;
-	const initPreviewVisibility = purposeIsAdd(purpose) || !initImgUrl ? false : true; // falls entweder Add-Formular oder kein Bild hinterlegt --> false
+	const initPreviewVisibility = !!initImgUrl; // false, falls kein bild vorhanden
 	const initCategory = purposeIsAdd(purpose) ? null : categoryFromDb;
 	const initCalories = purposeIsAdd(purpose) ? null : caloriesFromDb;
 	const initDifficulty = purposeIsAdd(purpose) ? null : diffcultyFromDb;
@@ -59,17 +59,14 @@ export default function AddEditRecipe({ purpose }) {
 			axios
 				.get(`/sign-s3?file-name=${file.name}&file-type=${file.type}`)
 				.then((res) => {
-					// console.log("sign-s3 response: ", res.data);
 					uploadFile(file, res.data.signedRequest, res.data.url);
 				})
 				.catch((err) => console.error("Could not get signed URL."));
 
 			function uploadFile(file, signedRequest, url) {
-				// console.log("arguments of 'uploadFile' Fn: ", file, signedRequest, url);
 				axios
 					.put(signedRequest, file) // signedRequest is an AWS S3 URL with embedded credentials
 					.then(() => {
-						// console.log("setImgSrc to url: " + url);
 						setImgSrc(url);
 					})
 					.catch((err) => console.error("Could not upload file. " + err));
