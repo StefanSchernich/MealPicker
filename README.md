@@ -3,7 +3,7 @@ Meal Picker
 Motivation
 Sometimes (most of the time) we have trouble coming up with ideas on what to cook. Meal Picker provides ideas to fill that void.
 
-Non-Goal
+Not in scope:
 Detailed cooking instructions are not provided as the purpose of the app is to give you an idea on *what* to cook, not *how*.
 
 How it works
