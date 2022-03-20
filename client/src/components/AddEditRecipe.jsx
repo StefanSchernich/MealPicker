@@ -24,7 +24,7 @@ export default function AddEditRecipe({ purpose }) {
 		imgUrl: imgUrlFromDb,
 		category: categoryFromDb,
 		calories: caloriesFromDb,
-		difficulty: diffcultyFromDb,
+		difficulty: difficultyFromDb,
 		ingredients: ingredientsFromDb,
 	} = recipeData;
 
@@ -37,7 +37,7 @@ export default function AddEditRecipe({ purpose }) {
 	const initPreviewVisibility = !!initImgUrl; // false, falls kein bild vorhanden
 	const initCategory = purposeIsAdd(purpose) ? null : categoryFromDb;
 	const initCalories = purposeIsAdd(purpose) ? null : caloriesFromDb;
-	const initDifficulty = purposeIsAdd(purpose) ? null : diffcultyFromDb;
+	const initDifficulty = purposeIsAdd(purpose) ? null : difficultyFromDb;
 	const initIngredients = purposeIsAdd(purpose) || ingredientsFromDb.length === 0 ? [""] : ingredientsFromDb;
 
 	const [title, setTitle] = useState(initTitle);

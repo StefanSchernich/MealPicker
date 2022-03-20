@@ -92,7 +92,7 @@ export default function Filter(props) {
 		return () => document.removeEventListener("keydown", handleEnter);
 	});
 
-	// Resette Filter beim Mouting / Rückkehr von Rezeptseiten
+	// Resette Filter beim Mounting / Rückkehr von Rezeptseiten
 	useEffect(() => {
 		setCategory("");
 		setCalories("");
@@ -188,7 +188,7 @@ function sanitizeObj(filterObj) {
 }
 
 function capitalizeString(str) {
-	return str ? str[0].toUpperCase() + str.slice(1) : "";
+	return str ? (str[0].toUpperCase() + str.slice(1)).trim() : "";
 }
 
 /* User Story Textsuche:
