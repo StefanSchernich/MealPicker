@@ -40,7 +40,7 @@ export default function Recipe(props) {
 				<p
 					className='delete'
 					onClick={(e) => {
-						if (window.confirm("Möchtest du dieses Rezept wirklich löschen?")) handleRecipeDelete(e);
+						if (window.confirm("Möchtest du dieses Rezept wirklich löschen?")) handleRecipeDelete();
 					}}>
 					Rezept löschen ❌
 				</p>

@@ -6,6 +6,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import RadioFilterSection from "../../components/subcomponents/RadioFilterSection";
 import FilterOptionCheckbox from "../../components/subcomponents/FilterOptionCheckbox";
 import { categoryOptions, caloryOptions, difficultyOptions, ingredientOptions } from "../../app/data/data";
+import FreeTextSearchInput from "../../components/subcomponents/FreeTextIngSearch";
 import { markCheckedInputs } from "../../app/utilityFunctions";
 
 export default function Filter(props) {
@@ -16,7 +17,7 @@ export default function Filter(props) {
 	const [calories, setCalories] = useState("");
 	const [difficulty, setDifficulty] = useState("");
 	const [ingrFilterVisible, setIngrFilterVisible] = useState(false);
-	const [ingSearchTerm, setIngSearchTerm] = useState("");
+	const [ingSearchTerms, setIngSearchTerms] = useState([""]);
 	const [ingredients, setIngredients] = useState([]);
 
 	function handleCategoryChange(e) {
@@ -36,8 +37,26 @@ export default function Filter(props) {
 		});
 	}
 
-	function handleTextSearchChange({ target: { value } }) {
-		setIngSearchTerm(value);
+	// ##### Freetext Ingredient Input Handlers #####
+	function handleTextSearchChange({ target: { value } }, index) {
+		setIngSearchTerms((prevSearchTerms) => {
+			const newSearchTerms = [...prevSearchTerms];
+			newSearchTerms[index] = value;
+			return newSearchTerms;
+		});
+	}
+
+	function handleTextSearchAdd() {
+		setIngSearchTerms((prevState) => [...prevState, ""]);
+	}
+
+	function handleTextSearchRemove(e, index) {
+		e.preventDefault(); // ALL buttons in forms are by default submit buttons --> submit needs to be prevented
+		setIngSearchTerms((prevSearchTerms) => {
+			const newSearchTerms = [...prevSearchTerms];
+			newSearchTerms.splice(index, 1);
+			return newSearchTerms;
+		});
 	}
 
 	function handleIngFilterVisibility(e) {
@@ -51,17 +70,17 @@ export default function Filter(props) {
 		setCalories("");
 		setDifficulty("");
 		setIngredients([]);
-		setIngSearchTerm("");
+		setIngSearchTerms([""]);
 	}
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		let checkedAndTextIngredients = [...ingredients, capitalizeString(ingSearchTerm)];
+		let checkedAndTextIngredients = [...ingredients, ...validateFreetextSearchTerms(ingSearchTerms)];
 		const filter = {
 			category,
 			calories,
 			difficulty,
-			ingredients: ingSearchTerm ? checkedAndTextIngredients : ingredients,
+			ingredients: checkedAndTextIngredients,
 		};
 		const sanitizedFilterObj = sanitizeObj(filter);
 		dispatch(fetchRandomRecipe(sanitizedFilterObj))
@@ -98,7 +117,7 @@ export default function Filter(props) {
 		setCalories("");
 		setDifficulty("");
 		setIngredients([]);
-		setIngSearchTerm("");
+		setIngSearchTerms([""]);
 	}, []);
 
 	return (
@@ -138,10 +157,19 @@ export default function Filter(props) {
 						</button>
 						<div className='filterSection ingFilter' style={ingrFilterVisible ? { maxHeight: 10000 } : { maxHeight: 0 }}>
 							<span className='filterHeading'>Zutaten</span>
-							<div className='textSearchContainer'>
-								<input id='ingTextSearch' type='text' placeholder='Zutat' value={ingSearchTerm} onChange={handleTextSearchChange} />
-								<i className='fa-solid fa-magnifying-glass'></i>
-							</div>
+							{ingSearchTerms.map((searchTerm, index) => {
+								return (
+									<FreeTextSearchInput
+										key={`index_${index}`}
+										index={index}
+										value={searchTerm}
+										listLength={ingSearchTerms.length}
+										handleTextSearchChange={handleTextSearchChange}
+										handleTextSearchAdd={handleTextSearchAdd}
+										handleTextSearchRemove={handleTextSearchRemove}
+									/>
+								);
+							})}
 
 							<div className='filterOptions'>
 								{ingredientOptions.map(({ id, value, icon }) => {
@@ -187,12 +215,12 @@ function sanitizeObj(filterObj) {
 	return preparedFilterObj;
 }
 
-function capitalizeString(str) {
-	return str ? (str[0].toUpperCase() + str.slice(1)).trim() : "";
+function validateFreetextSearchTerms(freetextSearchTerms) {
+	const validatedSearchTerms = [];
+	freetextSearchTerms.forEach((searchTerm) => {
+		if (searchTerm) {
+			validatedSearchTerms.push((searchTerm[0].toUpperCase() + searchTerm.slice(1)).trim());
+		}
+	});
+	return validatedSearchTerms;
 }
-
-/* User Story Textsuche:
-  1. Es gibt ein Input-Feld, in welches ich Text eintragen kann.
-  2. Beim Suchen eines Rezepts werden nur solche vorgeschlagen, die die Zutat enthalten.
-  3. Mit dem gleichen Button ("Zutatenfilter ausblenden") kann der Filter wieder ausgeblendet werden.
-*/

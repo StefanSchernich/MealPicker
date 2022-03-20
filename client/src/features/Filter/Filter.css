@@ -55,6 +55,11 @@ fieldset {
 	margin-bottom: 1rem;
 }
 
+.textSearchBar {
+	position: relative;
+	flex: 1 1 100%;
+}
+
 #ingTextSearch {
 	line-height: 2rem;
 	display: inline-block;
