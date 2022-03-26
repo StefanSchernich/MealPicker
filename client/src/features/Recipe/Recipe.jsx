@@ -34,6 +34,9 @@ export default function Recipe(props) {
 					<p className='recipeDescription'>{difficulty}</p>
 				</div>
 				<ul>{ingredientList}</ul>
+				<a href={`https://www.chefkoch.de/rs/s0/${title}/Rezepte.html`} rel='noreferrer' target='_blank'>
+					Passende Rezepte auf Chefkoch finden 🔎
+				</a>
 				<Link className='edit' to={`/editRecipe/${recipeId}`}>
 					Rezept editieren ✏️
 				</Link>
