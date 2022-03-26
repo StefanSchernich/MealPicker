@@ -34,7 +34,6 @@ app.get("/fetchRandomRecipe", async (req, res) => {
 	const count = await Recipe.count(filter);
 	const random = Math.floor(Math.random() * count);
 	const filteredRecipe = await Recipe.findOne(filter).skip(random).exec();
-	// console.log(filteredRecipe);
 	return res.json(filteredRecipe);
 });
 
@@ -52,24 +51,21 @@ app.get("/sign-s3", (req, res) => {
 
 	s3.getSignedUrl("putObject", s3Params, (err, data) => {
 		if (err) {
-			console.log(err);
+			console.error(err);
 			return res.end();
 		}
 		const returnData = {
 			signedRequest: data,
 			url: `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${fileName}`,
 		};
-		console.log("S3 return data: ", returnData);
 		res.write(JSON.stringify(returnData));
 		res.end();
 	});
 });
 
 app.post("/addRecipe", async (req, res) => {
-	console.log("ADD Req Body: ", req.body);
 	// req.body contains all required recipe data --> use copy
 	const recipeData = { ...req.body };
-	console.log("recipeData to be handed to document creation:", recipeData);
 	const newRecipe = await Recipe.create(recipeData);
 	return res.status(200).json(newRecipe);
 });
@@ -83,7 +79,6 @@ app.patch("/editRecipe/:id", async (req, res) => {
 });
 
 app.delete("/deleteRecipe/:id", async (req, res) => {
-	console.log("DELETE TRIGGERED");
 	const { id } = req.params;
 	const recipeToBeDeleted = await Recipe.findByIdAndDelete(id).exec();
 	return res.status(200).json({ deletedRecipe: recipeToBeDeleted });
@@ -110,7 +105,8 @@ NODE_ENV: ${process.env.NODE_ENV}`)
 function generateFilter(reqFilterObj) {
 	const filterObj = { ...reqFilterObj };
 	if ("ingredients" in filterObj) {
-		filterObj["ingredients"] = { $all: filterObj["ingredients"] };
+		// filterObj["ingredients"] = { $all: filterObj["ingredients"] };
+		filterObj["ingredients"] = { $all: filterObj["ingredients"].map((ingredient) => new RegExp(ingredient, "i")) };
 	}
 	return filterObj;
 }

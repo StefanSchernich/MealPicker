@@ -6,7 +6,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import RadioFilterSection from "../../components/subcomponents/RadioFilterSection";
 import FilterOptionCheckbox from "../../components/subcomponents/FilterOptionCheckbox";
 import { categoryOptions, caloryOptions, difficultyOptions, ingredientOptions } from "../../app/data/data";
-import FreeTextSearchInput from "../../components/subcomponents/FreeTextIngSearch";
+import FreeTextSearchInput from "../../components/subcomponents/FreeTextSearchInput";
 import { markCheckedInputs } from "../../app/utilityFunctions";
 
 export default function Filter(props) {
@@ -157,19 +157,6 @@ export default function Filter(props) {
 						</button>
 						<div className='filterSection ingFilter' style={ingrFilterVisible ? { maxHeight: 10000 } : { maxHeight: 0 }}>
 							<span className='filterHeading'>Zutaten</span>
-							{ingSearchTerms.map((searchTerm, index) => {
-								return (
-									<FreeTextSearchInput
-										key={`index_${index}`}
-										index={index}
-										value={searchTerm}
-										listLength={ingSearchTerms.length}
-										handleTextSearchChange={handleTextSearchChange}
-										handleTextSearchAdd={handleTextSearchAdd}
-										handleTextSearchRemove={handleTextSearchRemove}
-									/>
-								);
-							})}
 
 							<div className='filterOptions'>
 								{ingredientOptions.map(({ id, value, icon }) => {
@@ -185,6 +172,19 @@ export default function Filter(props) {
 									);
 								})}
 							</div>
+							{ingSearchTerms.map((searchTerm, index) => {
+								return (
+									<FreeTextSearchInput
+										key={`index_${index}`}
+										index={index}
+										value={searchTerm}
+										listLength={ingSearchTerms.length}
+										handleTextSearchChange={handleTextSearchChange}
+										handleTextSearchAdd={handleTextSearchAdd}
+										handleTextSearchRemove={handleTextSearchRemove}
+									/>
+								);
+							})}
 						</div>
 						<input type='submit' value='Rezept suchen' />
 						<button className='resetBtn' onClick={handleFilterFormReset}>
@@ -219,7 +219,7 @@ function validateFreetextSearchTerms(freetextSearchTerms) {
 	const validatedSearchTerms = [];
 	freetextSearchTerms.forEach((searchTerm) => {
 		if (searchTerm) {
-			validatedSearchTerms.push((searchTerm[0].toUpperCase() + searchTerm.slice(1)).trim());
+			validatedSearchTerms.push(searchTerm.trim());
 		}
 	});
 	return validatedSearchTerms;
